@@ -1,0 +1,38 @@
+name: Display Assertions on Dashboard
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  display_dashboard:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Install jq
+        run: sudo apt-get install jq
+
+      - name: Read JSON and Create Dashboard
+        run: |
+          # Read the JSON file and extract the "assertions" field
+          ASSERTIONS=$(cat jsonResults.json | jq -r '.run.stats.assertions.total')
+
+          # Create a simple HTML file for the dashboard
+          echo "<html><body><h1>Total Assertions: $ASSERTIONS</h1></body></html>" > dashboard.html
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add dashboard.html
+          git commit -m "Update dashboard with total assertions"
+          git push
