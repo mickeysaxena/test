@@ -25,14 +25,15 @@ jobs:
         run: |
           # Read the JSON file and extract the "assertions" field
           ASSERTIONS=$(cat jsonResults.json | jq -r '.run.stats.assertions.total')
+          FAILED=$(cat jsonResults.json | jq -r '.run.stats.assertions.failed')
 
           # Create a simple HTML file for the dashboard
-          echo "<html><body><h1>Total Assertions: $ASSERTIONS</h1></body></html>" > dashboard.html
+          echo "<html><body><h1>Total Assertions: $ASSERTIONS</h1><h1>Failed: $FAILED</h1></body></html>" > readme.md
 
       - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add dashboard.html
+          git add readme.md
           git commit -m "Update dashboard with total assertions"
           git push
